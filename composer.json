@@ -1,0 +1,22 @@
+{
+  "name": "joassanon/image-optimizer",
+  "version": "0.1.0",
+  "description": "On-demand image optimization endpoint for Laravel",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": { "Vendor\\ImageOptimizer\\": "src/" },
+    "files": ["src/Helpers/image_helper.php"]
+  },
+  "extra": {
+    "laravel": {
+      "providers": ["Vendor\\ImageOptimizer\\ServiceProvider"]
+    }
+  },
+  "require": {
+    "php": ">=8.0",
+    "illuminate/support": "^10.0",
+    "intervention/image": "^2.7",
+    "spatie/image-optimizer": "^1.8"
+  }
+}
