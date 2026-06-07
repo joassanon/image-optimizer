@@ -1,6 +1,6 @@
 {
   "name": "joassanon/image-optimizer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "On-demand image optimization endpoint for Laravel",
   "type": "library",
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "extra": {
     "laravel": {
-      "providers": ["Vendor\\ImageOptimizer\\ServiceProvider"]
+      "providers": ["Vendor\\ImageOptimizer\\ImageOptimizerServiceProvider"]
     }
   },
   "require": {

@@ -1,14 +1,15 @@
 <?php
-namespace App\Http\Controllers;
+namespace Vendor\ImageOptimizer\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class ImageController extends Controller
+class ImageController extends BaseController
 {
     protected $allowedPrefixes = ['images/'];
     protected $maxWidth = 5000;
