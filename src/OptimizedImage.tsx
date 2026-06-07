@@ -2,19 +2,40 @@ import { useMemo } from 'react';
 
 const DEFAULT_WIDTHS = [320, 480, 768, 1024, 1366, 1600, 1920];
 
+/**
+ * Default width values used to generate normalized responsive `srcset` entries.
+ * @type {number[]}
+ */
+
 export interface OptimizedImageProps {
+  /** Source image path passed to the optimizer endpoint. */
   src: string;
+  /** Alternative text for the image. */
   alt?: string;
+  /** Width values used to build the `srcset`. */
   widths?: number[];
+  /** `sizes` attribute value for responsive image selection. */
   sizes?: string;
+  /** Quality value forwarded to the image optimizer. */
   quality?: number;
+  /** Optional output format name forwarded as `fm`. */
   format?: string;
+  /** When true, the rendered image uses eager loading. */
   priority?: boolean;
+  /** Optional placeholder image URL shown in a blurred overlay. */
   placeholder?: string | null;
+  /** CSS class names applied to the rendered image. */
   className?: string;
+  /** Inline styles applied to the rendered image. */
   style?: React.CSSProperties;
 }
 
+/**
+ * A responsive image component that builds optimized `/img` query URLs for multiple widths.
+ *
+ * @param {OptimizedImageProps} props
+ * @returns {JSX.Element}
+ */
 const OptimizedImage = ({
   src,
   alt = '',
