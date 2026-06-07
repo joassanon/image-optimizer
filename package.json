@@ -1,6 +1,14 @@
 {
     "name": "@joassanon/optimized-image",
     "version": "1.0.1",
+    "description": "A React component for optimized image loading with support for responsive images and lazy loading.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/joassanon/optimized-image.git"
+    },
+    "author": {
+        "name": "Joas Sanon"
+    },
     "main": "dist/index.cjs.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts",
@@ -39,6 +47,7 @@
         "@testing-library/jest-dom": "^6.0.0"
     },
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "registry": "https://npm.pkg.github.com"
     }
 }
