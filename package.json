@@ -1,6 +1,6 @@
 {
     "name": "@joassanon/optimized-image",
-    "version": "1.0.1",
+    "version": "1.2.0",
     "description": "A React component for optimized image loading with support for responsive images and lazy loading.",
     "repository": {
         "type": "git",
