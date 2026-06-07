@@ -1,20 +1,22 @@
-# @joassanon/optimized-image
+﻿# Image Optimizer / Optimized Image
 
-A lightweight React image component for responsive image delivery using query-based optimization.
+This repository contains two related packages:
 
-It builds `srcset` and `sizes` automatically, renders a modern `img` element, and can optionally overlay a blurred placeholder image.
+- `@joassanon/optimized-image` — a React component for responsive optimized image delivery
+- `joassanon/image-optimizer` — a Laravel image optimization endpoint that serves `/img`
 
-> Note: This package currently assumes your image optimization endpoint is available at `/img` and uses query parameters `src`, `w`, `q`, and `fm`.
+The React component is built to work with the Laravel backend in the same repository. It generates responsive `srcset`/`sizes` markup and calls `/img` with query parameters.
 
-## Features
+## What is included
 
-- Responsive image `srcset` generation from width presets
-- Automatic `sizes` support for fluid layouts
-- Lazy loading by default, eager loading when `priority` is enabled
-- Optional blurred placeholder overlay
-- Built for React 18+ with TypeScript support
+- `src/OptimizedImage.tsx` — React component
+- `src/index.ts` — package exports
+- `src/OptimizedImage.test.tsx` — Vitest-powered test suite
+- `composer.json` + Laravel service provider + controller — backend endpoint implementation
 
 ## Installation
+
+### React package
 
 ```bash
 npm install @joassanon/optimized-image
@@ -26,22 +28,56 @@ or
 yarn add @joassanon/optimized-image
 ```
 
-## Usage
+### Laravel backend
+
+Install the Laravel package as a dependency:
+
+```bash
+composer require joassanon/image-optimizer
+```
+
+If your Laravel app does not auto-discover providers, register it manually:
+
+```php
+Vendor\\ImageOptimizer\\ImageOptimizerServiceProvider::class,
+```
+
+Publish config if required:
+
+```bash
+php artisan vendor:publish --provider="Vendor\\ImageOptimizer\\ImageOptimizerServiceProvider" --tag=config
+```
+
+## Backend endpoint
+
+The backend exposes a single route at `/img`.
+
+Supported query params:
+
+- `src` — local image path, e.g. `images/products/shoe.jpg`
+- `w` — width in pixels
+- `q` — quality (10–95)
+- `fm` — optional output format (`webp`, `avif`, `png`, `jpeg`)
+- `fit` — optional fit mode, defaults to `max`
+
+> Important: the current Laravel endpoint only accepts `src` values beginning with `images/` and expects the file to exist on the configured filesystem disk.
+
+## React usage
 
 ```tsx
 import { OptimizedImage } from '@joassanon/optimized-image';
 
-export default function Example() {
+export default function ProductImage() {
   return (
     <OptimizedImage
-      src="https://example.com/photo.jpg"
-      alt="A responsive optimized photo"
-      widths={[320, 640, 960, 1280, 1600]}
+      src="images/products/shoe.jpg"
+      alt="Running shoe"
+      widths={[320, 640, 960, 1280]}
       sizes="(max-width: 768px) 100vw, 50vw"
       quality={80}
       format="webp"
       priority={false}
-      placeholder="https://example.com/photo-placeholder.jpg"
+      placeholder="images/products/shoe-blur.jpg"
       className="responsive-image"
       style={{ borderRadius: '8px' }}
     />
@@ -49,40 +85,33 @@ export default function Example() {
 }
 ```
 
+### Notes
+
+- `src` should be a local storage path, not an external URL, when using the bundled Laravel backend.
+- The component builds `/img?src=...&w=...&q=...` for each width.
+- If `format` is omitted, the backend negotiates the format from the browser `Accept` header.
+
 ## Props
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `src` | `string` | required | Source image URL passed to the optimizer endpoint |
+| `src` | `string` | required | Local image path passed to `/img`, e.g. `images/photo.jpg` |
 | `alt` | `string` | `''` | Alternative text for the image |
-| `widths` | `number[]` | `[320, 480, 768, 1024, 1366, 1600, 1920]` | List of widths used to generate `srcset` |
-| `sizes` | `string` | `100vw` | Value for the image `sizes` attribute |
-| `quality` | `number` | `75` | Image quality setting used by the optimizer endpoint |
-| `format` | `string` | `undefined` | Optional output format, appended as `fm` query parameter |
+| `widths` | `number[]` | `[320, 480, 768, 1024, 1366, 1600, 1920]` | Widths used to generate `srcset` |
+| `sizes` | `string` | `100vw` | Value for the `sizes` attribute |
+| `quality` | `number` | `75` | Optimizer quality setting |
+| `format` | `string` | `undefined` | Optional output format sent as `fm` |
 | `priority` | `boolean` | `false` | When `true`, uses `loading="eager"` |
-| `placeholder` | `string  null` | `null` | Optional placeholder image URL rendered on top with blur |
+| `placeholder` | `string | null` | `null` | Optional blurred placeholder image URL |
 | `className` | `string` | `''` | CSS class name for the rendered image |
 | `style` | `React.CSSProperties` | `{}` | Inline styles for the rendered image |
 
-## How it works
-
-The component builds an optimized image URL using the internal base path `/img` and appends the following query parameters:
-
-- `src` — source image URL
-- `w` — requested image width
-- `q` — requested image quality
-- `fm` — optional output format
-
-It renders a normal `<img>` tag with both `src` and `srcSet` attributes so the browser can choose the best size.
-
-When `placeholder` is provided, the component renders a second absolutely positioned blurred image overlay for better progressive loading.
-
-## Build
-
-This repository uses Rollup to generate CommonJS and ES module bundles.
+## Build & test
 
 ```bash
+npm install
 npm run build
+npm test
 ```
 
 ## Peer dependencies
@@ -92,4 +121,4 @@ npm run build
 
 ## License
 
-Add your license information here.
+MIT
