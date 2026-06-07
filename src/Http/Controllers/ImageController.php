@@ -11,9 +11,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ImageController extends BaseController
 {
-    protected $allowedPrefixes = ['images/'];
-    protected $maxWidth = 5000;
-
     public function show(Request $request)
     {
         $src = $request->query('src');
@@ -24,13 +21,21 @@ class ImageController extends BaseController
 
         if (! $src) abort(400);
         $src = ltrim($src, '/');
-        foreach ($this->allowedPrefixes as $p) {
-            if (Str::startsWith($src, $p)) goto allowed;
-        }
-        abort(403);
-        allowed:
 
-        $disk = config('filesystems.default', 'public');
+        $allowedPrefixes = config('image-optimizer.allowed_prefixes', ['images/']);
+        $matched = false;
+        foreach ($allowedPrefixes as $p) {
+            if (Str::startsWith($src, $p)) {
+                $matched = true;
+                break;
+            }
+        }
+
+        if (! $matched) {
+            abort(403);
+        }
+
+        $disk = config('image-optimizer.disk', config('filesystems.default', 'public'));
         if (! Storage::disk($disk)->exists($src)) abort(404);
 
         $accept = $request->header('Accept', '');
@@ -40,11 +45,13 @@ class ImageController extends BaseController
             else $format = pathinfo($src, PATHINFO_EXTENSION) ?: 'jpg';
         }
 
-        $width = max(0, min($this->maxWidth, $width));
+        $maxWidth = (int) config('image-optimizer.max_width', 5000);
+        $width = max(0, min($maxWidth, $width));
         $quality = max(10, min(95, $quality));
 
+        $cachePath = config('image-optimizer.cache_path', 'img-cache');
         $hash = substr(md5($src . '|' . $width . '|' . $quality . '|' . $format . '|' . $fit), 0, 16);
-        $cachedPath = "img-cache/{$hash}.{$format}";
+        $cachedPath = "{$cachePath}/{$hash}.{$format}";
 
         // If cached on disk
         if (Storage::disk($disk)->exists($cachedPath)) {
